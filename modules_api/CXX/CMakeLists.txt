@@ -99,10 +99,15 @@ add_library(${LIBNAME_CXX}
   ${UTIL_SOURCE_FILES}
 )
 
-
 target_link_libraries(${LIBNAME_CXX}
   modules_api_inc
 )
+
+if (UNIX)
+  target_link_libraries(${LIBNAME_CXX}
+    stdc++fs
+  )
+endif()
 
 set_property(TARGET ${LIBNAME_CXX}
   APPEND PROPERTY COMPILE_DEFINITIONS

@@ -1,9 +1,9 @@
-// Copyright DEWETRON GmbH 2014
+// Copyright DEWETRON GmbH 2019
 
 #include "sp_serial_port_enum.h"
-#include "assert.h"
-// #include <boost/algorithm/string/predicate.hpp>
-// #include <boost/filesystem/operations.hpp>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace sp
 {
@@ -20,23 +20,24 @@ namespace sp
         ser_prefixes.push_back("/dev/ttyS");
 #endif
 
-        assert(false);
-
-        // if (fs::is_directory("/dev"))
-        // {
-        //     for (fs::directory_iterator dir_iter("/dev"); dir_iter != fs::directory_iterator(); ++dir_iter)
-        //     {
-
-        //         for (std::vector<std::string>::const_iterator prefix = ser_prefixes.begin();
-        //              prefix != ser_prefixes.end(); ++prefix)
-        //         {
-        //             if (boost::algorithm::starts_with(dir_iter->path().string(), *prefix))
-        //             {
-        //                 ser_port_names.push_back(dir_iter->path().string());
-        //             }
-        //         }
-        //     }
-        // }
+        if (fs::is_directory("/dev"))
+        {
+            for (fs::directory_iterator dir_iter("/dev"); dir_iter != fs::directory_iterator(); ++dir_iter)
+            {
+                for (std::vector<std::string>::const_iterator prefix = ser_prefixes.begin();
+                     prefix != ser_prefixes.end(); ++prefix)
+                {
+                //     if (boost::algorithm::starts_with(dir_iter->path().string(), *prefix))
+                //     {
+                //         ser_port_names.push_back(dir_iter->path().string());
+                //     }
+                        if (dir_iter->path().string().find(*prefix) == 0)
+                        {
+                                ser_port_names.push_back(dir_iter->path().string());
+                        }
+                }
+            }
+        }
 
         return ser_port_names;
     }
