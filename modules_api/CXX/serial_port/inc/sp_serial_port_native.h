@@ -1,3 +1,5 @@
+// Copyright DEWETRON GmbH 2019
+
 #pragma once
 
 #if defined UNIX

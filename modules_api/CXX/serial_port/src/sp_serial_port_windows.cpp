@@ -1,10 +1,9 @@
+// Copyright DEWETRON GmbH 2019
+
 #include "sp_serial_port_windows.h"
-
-#include "sp_log.h"
-
-#include "uni_assert.h"
-#include "uni_system.h"
-
+#include "uni_log.h"
+#include <assert.h>
+#include <sstream>
 #include <windows.h>
 
 
@@ -12,8 +11,10 @@ namespace
 {
     /** Litte helper used during port open. ensures proper cleanup
         when things go wrong. */
-    class TransactHandles : public boost::noncopyable
+    class TransactHandles
     {
+        TransactHandles(const TransactHandles&) = delete;
+        TransactHandles& operator=(const TransactHandles&) = delete;
     public:
         TransactHandles()
             : m_port(INVALID_HANDLE_VALUE),
@@ -31,13 +32,13 @@ namespace
 
         void setPort(HANDLE h)
         {
-            UNI_ASSERT(m_port == INVALID_HANDLE_VALUE);
+            assert(m_port == INVALID_HANDLE_VALUE);
             m_port = h;
         }
 
         void setEvent(HANDLE h)
         {
-            UNI_ASSERT(m_event == INVALID_HANDLE_VALUE);
+            assert(m_event == INVALID_HANDLE_VALUE);
             m_event = h;
         }
 
@@ -68,7 +69,7 @@ namespace
 
 namespace sp
 {
-    static const uint32 NUM_OF_RECURSIVE_READ_RETRIES = 3;
+    static const uint32_t NUM_OF_RECURSIVE_READ_RETRIES = 3;
 
     SerialPortWindows::SerialPortWindows(
         const std::string& name,
@@ -87,7 +88,7 @@ namespace sp
 
     bool SerialPortWindows::open()
     {
-        UNI_ASSERT(!isOpen());
+        assert(!isOpen());
 
         TransactHandles handles;
 
@@ -270,11 +271,11 @@ namespace sp
     bool SerialPortWindows::isOpen() const
     {
         if (m_port == INVALID_HANDLE_VALUE) {
-            UNI_ASSERT(m_event == INVALID_HANDLE_VALUE);
+            assert(m_event == INVALID_HANDLE_VALUE);
             return false;
         }
         else {
-            UNI_ASSERT(m_event != INVALID_HANDLE_VALUE);
+            assert(m_event != INVALID_HANDLE_VALUE);
             return true;
         }
     }
@@ -290,9 +291,9 @@ namespace sp
         return true;
     }
 
-    sint32 SerialPortWindows::numBytesAvailable() const
+    int32_t SerialPortWindows::numBytesAvailable() const
     {
-        UNI_ASSERT(isOpen());
+        assert(isOpen());
 
         COMSTAT status;
         if (!::ClearCommError(m_port, NULL, &status)) {
@@ -305,15 +306,15 @@ namespace sp
     ReadResult SerialPortWindows::read(
         BYTE* buf,
         std::size_t buf_size,
-        uint32 timeout_milli)
+        uint32_t timeout_milli)
     {
 
         return read(buf, buf_size, timeout_milli, NUM_OF_RECURSIVE_READ_RETRIES);
     }
 
-    ReadResult SerialPortWindows::read(BYTE* buf, std::size_t buf_size, uint32 timeout_milli, uint32 recursive_calls /*= false*/)
+    ReadResult SerialPortWindows::read(BYTE* buf, std::size_t buf_size, uint32_t timeout_milli, uint32_t recursive_calls /*= false*/)
     {
-        UNI_ASSERT(isOpen());
+        assert(isOpen());
 
         BOOL ok;
         OVERLAPPED overlapped = { 0 };
@@ -403,7 +404,7 @@ namespace sp
             printLastError_("SerialPortWindows::read failed (nread = 0)");
             if ((--recursive_calls))
             {
-                uni::System::Sleep(10);
+                ::Sleep(10);
                 return read(buf, buf_size, timeout_milli, recursive_calls);
             }
             else if (timeout_occured)
@@ -421,11 +422,11 @@ namespace sp
     bool SerialPortWindows::write(
     BYTE* buf,
     std::size_t buf_size,
-    uint32 addr,
-    uint32 command_id)
+    uint32_t addr,
+    uint32_t command_id)
     {
-        UNI_ASSERT(isOpen());
-        UNI_ASSERT(buf_size > 0);
+        assert(isOpen());
+        assert(buf_size > 0);
 
         OVERLAPPED overlapped = { 0 };
         overlapped.hEvent = m_event;
@@ -451,13 +452,13 @@ namespace sp
                         }
                         break;
                     case WAIT_TIMEOUT:
-                        SPSER_ERROR(m_name << ": WaitForSingleObject() timeout");
+                        UNILOG_ERROR(serial_port, m_name << ": WaitForSingleObject() timeout");
                         return false;
                     case WAIT_ABANDONED_0:
-                        SPSER_ERROR(m_name << ": WaitForSingleObject() handle abandoned");
+                        UNILOG_ERROR(serial_port, m_name << ": WaitForSingleObject() handle abandoned");
                         return false;
                     case WAIT_FAILED:
-                        SPSER_ERROR(m_name << ": WaitForSingleObject() failed");
+                        UNILOG_ERROR(serial_port, m_name << ": WaitForSingleObject() failed");
                         return false;
                     }
                 }
@@ -475,7 +476,7 @@ namespace sp
         return true;
     }
 
-    uint32 SerialPortWindows::getBaudRate() const
+    uint32_t SerialPortWindows::getBaudRate() const
     {
         return m_config.getBaudrate();
     }
@@ -489,7 +490,7 @@ namespace sp
         const std::string& msg)
         const
     {
-        SPSER_ERROR(m_name << ": " << msg);
+        UNILOG_ERROR(serial_port, m_name << ": " << msg);
     }
 
     void SerialPortWindows::printLastError_(
@@ -507,7 +508,7 @@ namespace sp
             sizeof(buffer),
             NULL /* WTF? */);
 
-        SPSER_ERROR(m_name << ": " << msg << ": " << buffer);
+        UNILOG_ERROR(serial_port, m_name << ": " << msg << ": " << buffer);
     }
 
 }

@@ -1,4 +1,4 @@
+// Copyright DEWETRON GmbH 2019
+
 #include "uni_log.h"
 
-
-//LOG_GROUP_DEFINE(serial_port)

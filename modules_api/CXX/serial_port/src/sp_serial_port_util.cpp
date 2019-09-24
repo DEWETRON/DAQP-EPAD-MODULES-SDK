@@ -1,14 +1,10 @@
 // Copyright DEWETRON GmbH 2015
 
-
 #include "sp_serial_port_util.h"
-
-#include <boost/bind.hpp>
-#include <boost/tokenizer.hpp>
-
 #include <algorithm>
 
-using namespace boost;
+
+//using namespace boost;
 namespace sp
 {
     SerialPortUtil::SerialPortUtil()
@@ -52,7 +48,9 @@ namespace sp
     {
         if (!m_prefix.empty())
         {
-            std::sort(vec.begin(), vec.end(), boost::bind(&sp::SerialPortUtil::com_sort, this, _1, _2));
+            std::sort(vec.begin(), vec.end(), [this](const std::string& str1, const std::string& str2) {
+                return com_sort(str1, str2);
+            });
         }
         else
         {
@@ -64,26 +62,32 @@ namespace sp
     {
         std::string temp1, temp2;
         int port1 = 0, port2 = 0;
-        if (str1.find(m_prefix) != std::string::npos)
+        auto pos = str1.find(m_prefix);
+
+        if (pos != std::string::npos)
         {
-            char_separator<char> sep(m_prefix.c_str());
-            tokenizer< char_separator<char> > tokens(str1, sep);
-            port1 = atoi(tokens.begin()->c_str());
+            pos += m_prefix.size();
+            auto num = str1.substr(pos);
+            port1 = std::stoi(num);
         }
         else
         {
             temp1 = str1;
         }
-        if (str2.find(m_prefix) != std::string::npos)
+
+        pos = str2.find(m_prefix);
+        if (pos != std::string::npos)
         {
-            char_separator<char> sep(m_prefix.c_str());
-            tokenizer< char_separator<char> > tokens(str2, sep);
-            port2 = atoi(tokens.begin()->c_str());
+            pos += m_prefix.size();
+            auto num = str2.substr(pos);
+            port2 = std::stoi(num);
         }
         else
         {
             temp2 = str2;
         }
+
+
         if (temp1.empty() && temp2.empty())
         {
             return port1 < port2;
@@ -92,5 +96,7 @@ namespace sp
         {
             return str1.compare(str2) < 0;
         }
+
+        return true;
     }
 } // end namespace sp

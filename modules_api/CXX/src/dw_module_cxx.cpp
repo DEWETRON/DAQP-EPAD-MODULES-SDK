@@ -9,6 +9,7 @@
 #define DW_MODULES_NO_API_INJECTION
 #include "dw_modules_load.h"
 #include "uni_log.h"
+#include <assert.h>
 #include <sstream>
 
 

@@ -12,19 +12,20 @@ namespace sp
 {
     class SerialPortWindows : public IfSerialPort
     {
+        SerialPortWindows(const SerialPortWindows&) = delete;
+        SerialPortWindows& operator=(const SerialPortWindows&) = delete;
     public:
         SerialPortWindows(const std::string& name, const SerialPortConfig& config);
         virtual ~SerialPortWindows();
 
-        virtual const char* getPortName() const UNI_OVERRIDE { return m_name.c_str(); }
-        virtual bool open() UNI_OVERRIDE;
-        virtual bool isOpen() const UNI_OVERRIDE;
-        virtual bool close() UNI_OVERRIDE;
-        virtual sint32 numBytesAvailable() const UNI_OVERRIDE;
-        virtual ReadResult read(BYTE* buf, std::size_t buf_size, uint32_t timeout_milli) UNI_OVERRIDE;
-        virtual bool write(BYTE* buf, std::size_t buf_size, uint32_t addr, uint32_t command_id) UNI_OVERRIDE;
-        virtual uint32_t getBaudRate() const UNI_OVERRIDE;
-        //virtual ScopedTransaction getScopedTransaction() UNI_OVERRIDE;
+        virtual const char* getPortName() const override { return m_name.c_str(); }
+        virtual bool open() override;
+        virtual bool isOpen() const override;
+        virtual bool close() override;
+        virtual int32_t numBytesAvailable() const override;
+        virtual ReadResult read(BYTE* buf, std::size_t buf_size, uint32_t timeout_milli) override;
+        virtual bool write(BYTE* buf, std::size_t buf_size, uint32_t addr, uint32_t command_id) override;
+        virtual uint32_t getBaudRate() const override;
 
     private:
         void printError_(const std::string& msg) const;

@@ -1,6 +1,5 @@
 // Copyright DEWETRON GmbH 2015
 
-
 #ifndef _SP_SERIAL_PORT_UTIL_H_
 #define _SP_SERIAL_PORT_UTIL_H_
 

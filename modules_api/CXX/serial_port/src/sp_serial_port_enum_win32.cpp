@@ -1,6 +1,5 @@
 // Copyright DEWETRON GmbH 2014
 
-
 #include "sp_serial_port_enum.h"
 #include <windows.h>
 #include <winreg.h>

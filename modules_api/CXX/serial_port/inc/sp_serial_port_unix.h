@@ -9,6 +9,9 @@ namespace sp
 {
     class SerialPortUnix : public IfSerialPort
     {
+        SerialPortUnix(const SerialPortUnix&) = delete;
+        SerialPortUnix& operator=(const SerialPortUnix&) = delete;
+
     public:
         SerialPortUnix(const std::string& path, const SerialPortConfig& config);
 

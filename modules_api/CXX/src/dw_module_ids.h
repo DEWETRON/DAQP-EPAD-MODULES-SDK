@@ -1,8 +1,8 @@
 // Copyright (c) Dewetron 2013
 #pragma once
 
-#include "boost/bimap.hpp"
-#include <boost/bimap/multiset_of.hpp>
+//#include "boost/bimap.hpp"
+//#include <boost/bimap/multiset_of.hpp>
 
 namespace dw
 {
@@ -98,8 +98,8 @@ namespace dw
 
         void dump();
     private:
-        typedef boost::bimap<boost::bimaps::multiset_of<int>, boost::bimaps::set_of<std::string>> NameMap;
-        NameMap m_name_map;
+        //typedef boost::bimap<boost::bimaps::multiset_of<int>, boost::bimaps::set_of<std::string>> NameMap;
+        //NameMap m_name_map;
     };
 } //namespace dw
 
