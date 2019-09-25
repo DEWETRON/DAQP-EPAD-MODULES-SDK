@@ -61,6 +61,29 @@ Open the generated solution:
 start DAQP_SDK_CXX.sln
 ```
 
+
+# Contact
+
+**Company information**
+
+[www.dewetron.com](https://www.dewetron.com)
+
+**For general questions please contact:**
+
+support@dewetron.com
+
+
+**For technical questions please contact:**
+
+Michael Oberhofer 
+
+michael.oberhofer@dewetron.com
+
+Gunther Laure
+
+gunther.laure@dewetron.com
+
+
 # License
 MIT License
 
