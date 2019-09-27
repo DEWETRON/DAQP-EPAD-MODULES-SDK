@@ -5,9 +5,31 @@
 
 set(LIBNAME_CXX dw_modules_api_cxx)
 
+
+
 #
 # Force C++17
 set(CMAKE_CXX_STANDARD 17)
+
+
+#
+# Check for 64 bit build
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(BUILD_X64 TRUE)
+  set(BUILD_X86 FALSE)
+else()
+  set(BUILD_X64 FALSE)
+  set(BUILD_X86 TRUE)
+endif()
+
+
+if(BUILD_X64)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_X64")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DBUILD_X64")
+elseif (BUILD_X86)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_X86")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DBUILD_X86")
+endif()
 
 
 include_directories(
@@ -16,13 +38,14 @@ include_directories(
 
 include_directories(
   inc
+  inc_sim
   src
   util/inc
   serial_port/inc
 )
 
 #
-# User C++ interface
+# C++ interface
 set(DW_CXX_API_HEADER_FILES
   inc/dw_if_module_cxx.h
   inc/dw_modules_api_cxx.h
@@ -39,6 +62,13 @@ set(DW_CXX_API_SOURCE_FILES
   src/dw_module_name_tupel.cpp
 )
 source_group("C++ Source Files" FILES ${DW_CXX_API_SOURCE_FILES})
+
+#
+# C++ interface (simulation)
+set(DW_CXX_API_SIM_HEADER_FILES
+  inc_sim/dw_modules_sim.h
+)
+source_group("C++ Sim Header Files" FILES ${DW_CXX_API_SIM_HEADER_FILES})
 
 set(DW_CXX_PRIVATE_API_HEADER_FILES
   src/dw_if_module_cxx.h
@@ -93,6 +123,7 @@ source_group("Util Source Files" FILES ${UTIL_SOURCE_FILES})
 add_library(${LIBNAME_CXX}
   ${DW_CXX_API_HEADER_FILES}
   ${DW_CXX_API_SOURCE_FILES}
+  ${DW_CXX_API_SIM_HEADER_FILES}
   ${SP_HEADER_FILES}
   ${SP_SOURCE_FILES}
   ${UTIL_HEADER_FILES}
@@ -116,6 +147,7 @@ set_property(TARGET ${LIBNAME_CXX}
 
 target_include_directories(${LIBNAME_CXX}
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc_sim
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/serial_port/inc
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/util/inc
 )
