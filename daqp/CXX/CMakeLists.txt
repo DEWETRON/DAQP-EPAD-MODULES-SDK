@@ -93,6 +93,14 @@ else()
   message(status "${DAQP_SDK_ROOT}/modules_api/CXX not found")
 endif()
 
+if (NOT TARGET pugixml)
+  add_subdirectory(${DAQP_SDK_ROOT}/3rdparty/pugixml-1.9 pugixml)
+endif()
+
+if (NOT TARGET xpugixml)
+  add_subdirectory(${DAQP_SDK_ROOT}/modules_api/CXX/lib/xpugixml xpugixml)
+endif()
+
 
 include_directories(
 )
@@ -115,6 +123,8 @@ macro(SampleBuildSettings SAMPLE FOLDER)
   target_link_libraries(${SAMPLE}
     modules_api_inc_c
     dw_modules_api_cxx
+    xpugixml
+    pugixml
     )
   if(UNIX)
     target_link_libraries(${SAMPLE}
