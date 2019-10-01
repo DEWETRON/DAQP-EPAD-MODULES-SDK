@@ -2,18 +2,17 @@
 #pragma once
 
 #include "dw_if_module_cxx.h"
+#include "dw_modules_sim_cxx.h"
 #include "dw_module_name_tupel.h"
 #include "dw_modules_sim_cxx.h"
-#include "dw_modules_c_command.h"
-#include "dw_modules_c_error.h"
+#include "public/dw_modules_c_command.h"
+#include "public/dw_modules_c_error.h"
 #include "sp_if_serial_port_fwd.h"
+#include "dw_config.h"
 #include <map>
-#include <mutex>
-#include <shared_mutex>
 
 namespace dwcxx
 {
-    class ModulesSim;
 
     /**
      * CXX Frontend class to for dw_modules_api.
@@ -202,11 +201,9 @@ namespace dwcxx
         static int m_load_counter;
 
         using ModuleHandleMap = std::map<uintptr_t, IfModulePtr>;
-        ModuleHandleMap m_module_handle_map;
-
-        ModulesSimPtr     m_module_sim;
-
-        std::shared_mutex m_mutex;
-        std::map<std::string, std::mutex> m_port_mutex;
+        ModuleHandleMap     m_module_handle_map;
+        ModulesSimPtr       m_module_sim;
+        dw_std::shared_mutex    m_mutex;
+        std::map<std::string, dw_std::mutex> m_port_mutex;
     };
 } // dwcxx

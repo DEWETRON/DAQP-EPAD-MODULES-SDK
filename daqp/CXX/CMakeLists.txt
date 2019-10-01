@@ -12,17 +12,18 @@ project(DAQP_SDK_CXX CXX)
 get_filename_component(DAQP_SDK_ROOT ../.. ABSOLUTE)
 
 #
-# Force C++17
-set(CMAKE_CXX_STANDARD 17)
+# Select used libraries: one of following
+if (NOT DEFINED USE_BOOST)
+  set(USE_BOOST FALSE)
+  set(USE_CXX17 TRUE)
+endif()
 
-#
-# Enable target folders in IDEs
-set_property(GLOBAL
-  PROPERTY USE_FOLDERS ON)
-
-#
-# Speed up compile time
-set(MSVC_BUILD_USING_MP TRUE)
+if (USE_CXX17)
+  #
+  # Force C++17
+  # needed for filesystem, shared_mutex
+  set(CMAKE_CXX_STANDARD 17)
+endif()
 
 #
 # Configure part start
@@ -76,8 +77,8 @@ endif()
 
 
 if (EXISTS ${DAQP_SDK_ROOT}/modules_api/C/CMakeLists.txt)
-  if (NOT TARGET modules_api_inc)
-    add_subdirectory(${DAQP_SDK_ROOT}/modules_api/C modules_api)
+  if (NOT TARGET modules_api_inc_c)
+    add_subdirectory(${DAQP_SDK_ROOT}/modules_api/C modules_api_inc_c)
   endif()
 else()
   message(status "${DAQP_SDK_ROOT}/modules_api/C not found")
@@ -112,7 +113,7 @@ endif()
 macro(SampleBuildSettings SAMPLE FOLDER)
   set_target_properties(${SAMPLE} PROPERTIES FOLDER ${FOLDER})
   target_link_libraries(${SAMPLE}
-    modules_api_inc
+    modules_api_inc_c
     dw_modules_api_cxx
     )
   if(UNIX)
@@ -121,6 +122,19 @@ macro(SampleBuildSettings SAMPLE FOLDER)
       pthread
       )
   endif()
+  if (USE_CXX17)
+    set_property(TARGET ${SAMPLE}
+      APPEND PROPERTY COMPILE_DEFINITIONS
+      USE_CXX17
+  )
+  endif()
+  if (USE_BOOST)
+    set_property(TARGET ${SAMPLE}
+      APPEND PROPERTY COMPILE_DEFINITIONS
+      USE_BOOST
+  )
+  endif()
+
 endmacro()
 
 

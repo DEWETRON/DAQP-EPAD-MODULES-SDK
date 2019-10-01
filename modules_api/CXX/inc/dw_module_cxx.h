@@ -1,9 +1,10 @@
 // Copyright (c) DEWETRON GmbH 2015
 #pragma once
 
+#include "uni_defines.h"
 #include "dw_if_module_cxx.h"
-#include "dw_modules_c_api.h"
-#include <mutex>
+//#include "dw_modules_c_api.h"
+#include "dw_config.h"
 
 namespace dwcxx
 {
@@ -23,19 +24,19 @@ namespace dwcxx
          * Can be different from the class.
          * @return the modules name
          */
-        std::string getModuleName() const override;
+        std::string getModuleName() const UNI_OVERRIDE;
 
         /**
          * Get the unique type of the module
          * @return the unique type id of the module.
          */
-        uint32_t getModuleID() const override;
+        uint32_t getModuleID() const UNI_OVERRIDE;
 
         /**
          * Get the module address
          * @return the module address
          */
-        uint32_t getModuleAddress() const override;
+        uint32_t getModuleAddress() const UNI_OVERRIDE;
 
         /**
          * Get the module type name attribute from XML.
@@ -43,7 +44,7 @@ namespace dwcxx
          * "DAQP" for DAQP and HSI
          * "DAQN" for DAQN
          */
-        std::string getModuleTypename() const override;
+        std::string getModuleTypename() const UNI_OVERRIDE;
 
         /**
          * setParamStr
@@ -53,7 +54,7 @@ namespace dwcxx
          * @param val
          * return true if successful
          */
-        bool setParamStr(const std::string& prop_source, const std::string& cmd_path, const std::string& var) override;
+        bool setParamStr(const std::string& prop_source, const std::string& cmd_path, const std::string& var) UNI_OVERRIDE;
 
         /**
          * getParamStr
@@ -63,7 +64,7 @@ namespace dwcxx
          * @param val
          * return true if successful
          */
-        bool getParamStr(const std::string& prop_source, const std::string& cmd_path, std::string& var) override;
+        bool getParamStr(const std::string& prop_source, const std::string& cmd_path, std::string& var) UNI_OVERRIDE;
 
         /**
          * getParamXML
@@ -73,7 +74,7 @@ namespace dwcxx
          * @param val
          * return true if successful
          */
-        bool getParamXML(const std::string& prop_source, const std::string& cmd_path, std::string& var) override;
+        bool getParamXML(const std::string& prop_source, const std::string& cmd_path, std::string& var) UNI_OVERRIDE;
 
 
         /**
@@ -82,7 +83,7 @@ namespace dwcxx
          * @param val
          * @return true if successful
          */
-        bool setParam_i32(uint32_t command, int val) override;
+        bool setParam_i32(uint32_t command, int val) UNI_OVERRIDE;
 
         /**
          * getParam_i32
@@ -90,13 +91,13 @@ namespace dwcxx
          * @param val
          * @return true if successful
          */
-        bool getParam_i32(uint32_t command, int* val) override;
+        bool getParam_i32(uint32_t command, int* val) UNI_OVERRIDE;
 
         /**
          * Apply module settings and parameters to the hardware.
          * @return true if successful
          */
-        bool applyParam() override;
+        bool applyParam() UNI_OVERRIDE;
 
 
         /**
@@ -111,7 +112,7 @@ namespace dwcxx
          * @param val
          * return true if successful
          */
-        bool setChannelParamStr(const std::string& prop_source, uint32_t ch_idx, const std::string& cmd_path, const std::string& var) override;
+        bool setChannelParamStr(const std::string& prop_source, uint32_t ch_idx, const std::string& cmd_path, const std::string& var) UNI_OVERRIDE;
 
         /**
          * getChannelParamStr
@@ -122,7 +123,7 @@ namespace dwcxx
          * @param val
          * return true if successful
          */
-        bool getChannelParamStr(const std::string& prop_source, uint32_t ch_idx, const std::string& cmd_path, std::string& var) override;
+        bool getChannelParamStr(const std::string& prop_source, uint32_t ch_idx, const std::string& cmd_path, std::string& var) UNI_OVERRIDE;
 
         /**
          * getChannelParamXML
@@ -133,17 +134,17 @@ namespace dwcxx
          * @param val
          * return true if successful
          */
-        bool getChannelParamXML(const std::string& prop_source, uint32_t ch_idx, const std::string& cmd_path, std::string& var) override;
+        bool getChannelParamXML(const std::string& prop_source, uint32_t ch_idx, const std::string& cmd_path, std::string& var) UNI_OVERRIDE;
 
 
         /**
          * Retrieve EPAD sample values
          */
-        bool getSamples(SampleValueVec& sample_vecn, uint32_t num_channels) override;
+        bool getSamples(SampleValueVec& sample_vecn, uint32_t num_channels) UNI_OVERRIDE;
     private:
         ModuleHandle m_handle;
         ModulesApi*  m_api;
-        mutable std::mutex m_mutex;
+        mutable dw_std::mutex m_mutex;
     };
 
 } // dwcxx

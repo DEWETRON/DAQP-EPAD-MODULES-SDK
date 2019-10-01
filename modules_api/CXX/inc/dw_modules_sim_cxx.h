@@ -1,8 +1,8 @@
 // Copyright (c) DEWETRON GmbH 2015
 #pragma once
 
+#include "dw_config.h"
 #include <string>
-#include <memory>
 
 namespace dwcxx
 {
@@ -55,7 +55,7 @@ namespace dwcxx
         ModulesApi* m_api;
     };
 
-    using ModulesSimWPtr = std::weak_ptr<ModulesSim>;
-    using ModulesSimPtr = std::shared_ptr<ModulesSim>;
+    using ModulesSimWPtr = dw_std::weak_ptr<ModulesSim>;
+    using ModulesSimPtr =  dw_std::shared_ptr<ModulesSim>;
 
 } // dwcxx

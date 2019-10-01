@@ -2,10 +2,9 @@
 
 #include "dw_modules_api_cxx.h"
 #include "sp_serial_port_util.h"
-#include "dw_modules_sim.h"
+
 
 using namespace dwcxx;
-
 
 bool enableDaqpSimulation(ModulesApi& dw_api);
 

@@ -3,7 +3,7 @@
 #include "dw_modules_sim_cxx.h"
 #include "dw_modules_api_cxx.h"
 #include "dw_module_name_tupel.h"
-#include "assert.h"
+#include "uni_assert.h"
 
 namespace dwcxx
 {
@@ -15,7 +15,7 @@ namespace dwcxx
 
     void ModulesSim::clear()
     {
-        assert(m_api);
+        UNI_ASSERT(m_api);
         if (m_api)
         {
             m_api->clearSim();
@@ -24,7 +24,7 @@ namespace dwcxx
 
     void ModulesSim::setCommandDelay(int delay)
     {
-        assert(m_api);
+        UNI_ASSERT(m_api);
         if (m_api)
         {
             m_api->setSimCommandDelay(delay);
@@ -33,7 +33,7 @@ namespace dwcxx
 
     bool ModulesSim::addSerialPort(const std::string& port)
     {
-        assert(m_api);
+        UNI_ASSERT(m_api);
         if (m_api)
         {
             return m_api->addSimSerialPort(port);
@@ -43,7 +43,7 @@ namespace dwcxx
 
     bool ModulesSim::addModule(const ModuleNameTupel& mod_name, const std::string& port, uint32_t slot_no)
     {
-        assert(m_api);
+        UNI_ASSERT(m_api);
         if (m_api)
         {
             return m_api->addSimModule(mod_name, port, slot_no);
@@ -53,7 +53,7 @@ namespace dwcxx
 
     bool ModulesSim::removeModule(const std::string& port, uint32_t slot_no)
     {
-        assert(m_api);
+        UNI_ASSERT(m_api);
         if (m_api)
         {
             return m_api->removeSimModule(port, slot_no);
