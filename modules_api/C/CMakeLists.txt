@@ -15,7 +15,6 @@ set(API_HEADER_FILES
 
 source_group("C Header Files" FILES ${API_HEADER_FILES})
 
-
 add_library(${LIBNAME} INTERFACE)
 
 #  adding source files to the import library adds those file to every dependent (direct or derived) project

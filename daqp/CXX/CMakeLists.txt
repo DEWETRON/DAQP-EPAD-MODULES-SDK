@@ -28,54 +28,15 @@ endif()
 #
 # Configure part start
 
-#
-# Check for 64 bit build
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(BUILD_X64 TRUE)
-  set(BUILD_X86 FALSE)
-else()
-  set(BUILD_X64 FALSE)
-  set(BUILD_X86 TRUE)
-endif()
+# 
+include(${DAQP_SDK_ROOT}/cmake/CMakeSettings.cmake)
 
 
-# Settings for GCC (UNIX)
-if(UNIX)
-
-  # set UNIX flag
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUNIX")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DUNIX")
-
-  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-multichar -std=c++11 -Wno-unused-variable")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmultichar -Wno-unused-variable")
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-multichar -std=c++0x")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmultichar")
-  endif()
+# Common build settings
+SetCommonOutputDirectory()
 
 
-  if(BUILD_X64)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_X64")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DBUILD_X64")
-  elseif (BUILD_X86)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_X86")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DBUILD_X86")
-  endif()
-
-  #
-  # Allow function pointers to void* assignments
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-
-  #
-  # Position Independent Code
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-
-endif()
-
-
+# Add C language bindings
 if (EXISTS ${DAQP_SDK_ROOT}/modules_api/C/CMakeLists.txt)
   if (NOT TARGET modules_api_inc_c)
     add_subdirectory(${DAQP_SDK_ROOT}/modules_api/C modules_api_inc_c)
@@ -84,7 +45,7 @@ else()
   message(status "${DAQP_SDK_ROOT}/modules_api/C not found")
 endif()
 
-
+# Add CXX language bindings and utility libraries
 if (EXISTS ${DAQP_SDK_ROOT}/modules_api/CXX/CMakeLists.txt)
   if (NOT TARGET dw_modules_api_cxx)
     add_subdirectory(${DAQP_SDK_ROOT}/modules_api/CXX dw_modules_api_cxx)
@@ -93,30 +54,16 @@ else()
   message(status "${DAQP_SDK_ROOT}/modules_api/CXX not found")
 endif()
 
+# Add XML processing library
 if (NOT TARGET pugixml)
   add_subdirectory(${DAQP_SDK_ROOT}/3rdparty/pugixml-1.9 pugixml)
 endif()
 
+# Add XML processing utility library
 if (NOT TARGET xpugixml)
   add_subdirectory(${DAQP_SDK_ROOT}/modules_api/CXX/lib/xpugixml xpugixml)
 endif()
 
-
-include_directories(
-)
-
-if(MSVC)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-  
-  if(BUILD_X64)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DBUILD_X64")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DBUILD_X64")
-  elseif(BUILD_X86)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DBUILD_X86")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DBUILD_X86")
-  endif()
-  
-endif()
 
 macro(SampleBuildSettings SAMPLE FOLDER)
   set_target_properties(${SAMPLE} PROPERTIES FOLDER ${FOLDER})
@@ -144,7 +91,6 @@ macro(SampleBuildSettings SAMPLE FOLDER)
       USE_BOOST
   )
   endif()
-
 endmacro()
 
 
