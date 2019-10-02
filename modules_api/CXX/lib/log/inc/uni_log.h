@@ -1,7 +1,4 @@
 // Copyright DEWETRON GmbH 2019
-
-#ifndef _SP_SERIAL_PORT__LOG_H_
-#define _SP_SERIAL_PORT__LOG_H_
 #pragma once
 
 
@@ -27,4 +24,3 @@
 //LOG_GROUP_DECLARE(serial_port)
 
 
-#endif //_SP_SERIAL_PORT__LOG_H_

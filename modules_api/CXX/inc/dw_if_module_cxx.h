@@ -1,10 +1,10 @@
 // Copyright (c) DEWETRON GmbH 2015
 #pragma once
 
-#include "dw_modules_c_command.h"
-#include "dw_modules_c_error.h"
+#include "public/dw_modules_c_command.h"
+#include "public/dw_modules_c_error.h"
+#include "dw_config.h"
 #include <inttypes.h>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -131,8 +131,8 @@ namespace dwcxx
     };
 
 
-    typedef std::shared_ptr<IfModule> IfModulePtr;
-    typedef std::weak_ptr<IfModule> IfModuleWPtr;
+    typedef dw_std::shared_ptr<IfModule> IfModulePtr;
+    typedef dw_std::weak_ptr<IfModule>   IfModuleWPtr;
 
 
 } // dwxcc

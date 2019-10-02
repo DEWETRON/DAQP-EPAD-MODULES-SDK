@@ -4,14 +4,18 @@
 #include "dw_modules_api_cxx.h"
 #include "dw_modules_c_command.h"
 #include "dw_modules_c_error.h"
-#include "dw_module_ids.h"
 
 #define DW_MODULES_NO_API_INJECTION
 #include "dw_modules_load.h"
-#include "uni_log.h"
-#include <assert.h>
+
+#include "dw_config.h"
+#include "uni_assert.h"
+#include "uni_logger.h"
 #include <sstream>
 
+#ifdef USE_BOOST
+#include <boost/lexical_cast.hpp>
+#endif
 
 LOG_GROUP_DEFINE(dwmodcxx)
 
@@ -26,21 +30,21 @@ namespace dwcxx
         : m_handle(handle)
         , m_api(api)
     {
-        assert(m_handle != nullptr);
-        assert(m_api != nullptr);
+        UNI_ASSERT(m_handle != nullptr);
+        UNI_ASSERT(m_api != nullptr);
     }
 
 
     std::string ModuleCxx::getModuleName() const
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         std::string buffer;
         uint32_t bufferlen = 0;
 
         if (DW_SUCCESS == (ret = DwModApi::DeWeGetParamStrLen(m_handle, "AllProp", "@Name", &bufferlen)))
         {
-            assert(bufferlen < 100); // just to catch -1 or other bogus returns in test
+            UNI_ASSERT(bufferlen < 100); // just to catch -1 or other bogus returns in test
             if (bufferlen)
             {
                 // strlen type return omits "\0"
@@ -52,7 +56,7 @@ namespace dwcxx
                     UNILOG_ERROR(dwmodcxx, "getModuleName: " << DwErrorStr(ret));
                     return std::string();
                 }
-                assert(bufferlen == buffer.size());
+                UNI_ASSERT(bufferlen == buffer.size());
             }
         }
         else
@@ -64,14 +68,14 @@ namespace dwcxx
 
     uint32_t ModuleCxx::getModuleID() const
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         std::string buffer;
         uint32_t bufferlen = 0;
 
         if (DW_SUCCESS == (ret = DwModApi::DeWeGetParamStrLen(m_handle, "AllProp", "@Type", &bufferlen)))
         {
-            assert(bufferlen < 100); // just to catch -1 or other bogus returns in test
+            UNI_ASSERT(bufferlen < 100); // just to catch -1 or other bogus returns in test
             if (bufferlen)
             {
                 // strlen type return omits "\0"
@@ -81,11 +85,28 @@ namespace dwcxx
                 if (DW_SUCCESS != (ret = DwModApi::DeWeGetParamStr(m_handle, "AllProp", "@Type", &(*buffer.begin()), bufferlen + 1)))
                 {
                     UNILOG_ERROR(dwmodcxx, "getModuleID: " << DwErrorStr(ret));
-                    return static_cast<uint32_t>(dw::ID_INVALID);
+                    return static_cast<uint32_t>(0xFF);
                 }
-                assert(bufferlen == buffer.size());
+                UNI_ASSERT(bufferlen == buffer.size());
 
+#ifdef USE_BOOST
+                try
+                {
+                    return boost::lexical_cast<uint32_t>(buffer);
+                }
+                catch (boost::bad_lexical_cast* /* e */)
+                {
+                    return static_cast<uint32_t>(0xFF);
+                }
+#else
+
+#ifdef USE_CXX17
                 return std::stoi(buffer);
+#else
+# error Select USE_CXX17 or USE_BOOST
+#endif // USE_CXX17
+
+#endif // USE_BOOST
             }
         }
         else
@@ -93,12 +114,12 @@ namespace dwcxx
             UNILOG_ERROR(dwmodcxx, "getModuleID: " << DwErrorStr(ret));
         }
 
-        return static_cast<uint32_t>(dw::ID_INVALID);
+        return static_cast<uint32_t>(0xFF);
     }
 
     uint32_t ModuleCxx::getModuleAddress() const
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         uint32_t address = static_cast<uint32_t>(-1);
         std::string buffer;
@@ -106,7 +127,7 @@ namespace dwcxx
 
         if (DW_SUCCESS == (ret = DwModApi::DeWeGetParamStrLen(m_handle, "CurrProp", "Address", &bufferlen)))
         {
-            assert(bufferlen < 100); // just to catch -1 or other bogus returns in test
+            UNI_ASSERT(bufferlen < 100); // just to catch -1 or other bogus returns in test
             if (bufferlen)
             {
                 // strlen type return omits "\0"
@@ -118,9 +139,26 @@ namespace dwcxx
                     UNILOG_ERROR(dwmodcxx, "getModuleAddress: " << DwErrorStr(ret));            
                     return static_cast<uint32_t>(-1);
                 }
-                assert(bufferlen == buffer.size());
+                UNI_ASSERT(bufferlen == buffer.size());
 
+#ifdef USE_BOOST
+                try
+                {
+                    return boost::lexical_cast<uint32_t>(buffer);
+                }
+                catch (boost::bad_lexical_cast* /* e */)
+                {
+                    return static_cast<uint32_t>(-1);
+                }
+#else
+
+#ifdef USE_CXX17
                 return std::stoi(buffer);
+#else
+# error Select USE_CXX17 or USE_BOOST
+#endif // USE_CXX17
+
+#endif // USE_BOOST
             }
         }
         else
@@ -133,14 +171,14 @@ namespace dwcxx
 
     std::string ModuleCxx::getModuleTypename() const
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         std::string buffer;
         uint32_t bufferlen = 0;
 
         if (DW_SUCCESS == (ret = DwModApi::DeWeGetParamStrLen(m_handle, "AllProp", "@ModuleType", &bufferlen)))
         {
-            assert(bufferlen < 100); // just to catch -1 or other bogus returns in test
+            UNI_ASSERT(bufferlen < 100); // just to catch -1 or other bogus returns in test
             if (bufferlen)
             {
                 // strlen type return omits "\0"
@@ -152,7 +190,7 @@ namespace dwcxx
                     UNILOG_ERROR(dwmodcxx, "getModuleTypename: " << DwErrorStr(ret));
                     return std::string();
                 }
-                assert(bufferlen == buffer.size());
+                UNI_ASSERT(bufferlen == buffer.size());
             }
         }
         else
@@ -164,7 +202,7 @@ namespace dwcxx
 
     bool ModuleCxx::setParamStr(const std::string& prop_source, const std::string& cmd_path, const std::string& var)
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         if (DW_SUCCESS != (ret = DwModApi::DeWeSetParamStr(m_handle, prop_source.c_str(), cmd_path.c_str(), var.c_str())))
         {
@@ -176,13 +214,13 @@ namespace dwcxx
 
     bool ModuleCxx::getParamStr(const std::string& prop_source, const std::string& cmd_path, std::string& var)
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         uint32_t bufferlen = 0;
 
         if (DW_SUCCESS == (ret = DwModApi::DeWeGetParamStrLen(m_handle, prop_source.c_str(), cmd_path.c_str(), &bufferlen)))
         {
-            assert(bufferlen < 100000); // just to catch -1 or other bogus returns in test
+            UNI_ASSERT(bufferlen < 100000); // just to catch -1 or other bogus returns in test
             if (bufferlen)
             {
                 // strlen type return omits "\0"
@@ -196,7 +234,7 @@ namespace dwcxx
                     return false;
                 }
 
-                assert(bufferlen == var.size());
+                UNI_ASSERT(bufferlen == var.size());
 
                 return true;
             }
@@ -210,13 +248,13 @@ namespace dwcxx
 
     bool ModuleCxx::getParamXML(const std::string& prop_source, const std::string& cmd_path, std::string& var)
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         uint32_t bufferlen = 0;
 
         if (DW_SUCCESS == (ret = DwModApi::DeWeGetParamXMLLen(m_handle, prop_source.c_str(), cmd_path.c_str(), &bufferlen)))
         {
-            assert(bufferlen < 100000); // just to catch -1 or other bogus returns in test
+            UNI_ASSERT(bufferlen < 100000); // just to catch -1 or other bogus returns in test
             if (bufferlen)
             {
                 // strlen type return omits "\0"
@@ -230,7 +268,7 @@ namespace dwcxx
                     return false;
                 }
 
-                assert(bufferlen == var.size());
+                UNI_ASSERT(bufferlen == var.size());
                 return true;
             }
         }
@@ -244,7 +282,7 @@ namespace dwcxx
 
     bool ModuleCxx::setParam_i32(uint32_t command, int val)
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         if (DW_SUCCESS == (ret = DwModApi::DeWeSetParam_i32(m_handle, command, val)))
         {
@@ -256,7 +294,7 @@ namespace dwcxx
 
     bool ModuleCxx::getParam_i32(uint32_t command, int* val)
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         if (DW_SUCCESS == (ret = DwModApi::DeWeGetParam_i32(m_handle, command, val)))
         {
@@ -268,7 +306,7 @@ namespace dwcxx
 
     bool ModuleCxx::applyParam()
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         if (DW_SUCCESS == (ret = DwModApi::DeWeSetParam_i32(m_handle, DWCMD_APPLY_PARAM, 0)))
         {
@@ -281,7 +319,7 @@ namespace dwcxx
 
     bool ModuleCxx::setChannelParamStr(const std::string& prop_source, uint32_t ch_idx, const std::string& sub_path, const std::string& var)
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         std::stringstream ss;
         // Note: xpath idx == ch_idx + 1
@@ -299,7 +337,7 @@ namespace dwcxx
 
     bool ModuleCxx::getChannelParamStr(const std::string& prop_source, uint32_t ch_idx, const std::string& sub_path, std::string& var)
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         uint32_t bufferlen = 0;
 
@@ -310,7 +348,7 @@ namespace dwcxx
 
         if (DW_SUCCESS == (ret = DwModApi::DeWeGetParamStrLen(m_handle, prop_source.c_str(), cmd_path.c_str(), &bufferlen)))
         {
-            assert(bufferlen < 100000); // just to catch -1 or other bogus returns in test
+            UNI_ASSERT(bufferlen < 100000); // just to catch -1 or other bogus returns in test
             if (bufferlen)
             {
                 // strlen type return omits "\0"
@@ -324,7 +362,7 @@ namespace dwcxx
                     return false;
                 }
 
-                assert(bufferlen == var.size());
+                UNI_ASSERT(bufferlen == var.size());
 
                 return true;
             }
@@ -339,7 +377,7 @@ namespace dwcxx
 
     bool ModuleCxx::getChannelParamXML(const std::string& prop_source, uint32_t ch_idx, const std::string& sub_path, std::string& var)
     {
-        std::lock_guard<std::mutex> lck(m_mutex);
+        dw_std::lock_guard<dw_std::mutex> lck(m_mutex);
         int ret = DW_SUCCESS;
         uint32_t bufferlen = 0;
 
@@ -350,7 +388,7 @@ namespace dwcxx
 
         if (DW_SUCCESS == (ret = DwModApi::DeWeGetParamXMLLen(m_handle, prop_source.c_str(), cmd_path.c_str(), &bufferlen)))
         {
-            assert(bufferlen < 100000); // just to catch -1 or other bogus returns in test
+            UNI_ASSERT(bufferlen < 100000); // just to catch -1 or other bogus returns in test
             if (bufferlen)
             {
                 // strlen type return omits "\0"
@@ -364,7 +402,7 @@ namespace dwcxx
                     return false;
                 }
 
-                assert(bufferlen == var.size());
+                UNI_ASSERT(bufferlen == var.size());
 
                 return true;
             }
