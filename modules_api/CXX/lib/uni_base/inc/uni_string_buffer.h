@@ -11,7 +11,9 @@
 
 #include "uni_stdio.h"
 
+#ifdef USE_BOOST
 #include <boost/static_assert.hpp>
+#endif
 
 #include <algorithm>
 #include <iostream>
@@ -33,7 +35,9 @@ namespace uni
             , m_length(0)
             , m_buffer_size(MIN_SIZE)
         {
+#ifdef USE_BOOST
             BOOST_STATIC_ASSERT((MIN_SIZE <= MAX_SIZE) || (MAX_SIZE == 0));
+#endif
             m_buffer[0] = 0;
         }
 

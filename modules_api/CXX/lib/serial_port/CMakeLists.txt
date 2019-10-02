@@ -40,6 +40,10 @@ add_library(${LIBNAME}
     ${SP_SOURCE_FILES}
 )
 
+target_link_libraries(${LIBNAME}
+	log
+)
+
 target_include_directories(${LIBNAME}
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc
 )
