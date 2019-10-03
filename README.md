@@ -6,11 +6,28 @@ DEWETRON DAQP-EPAD-MODULES SDK. API description and example sources.
 To use the DEWETRON DAQP-EPAD SDK you need a current DW_MODULES API installation.
 The DW_MODULES Application installer is available on DEWETRON's customer care center:
 
-https://ccc.dewetron.com
+DAQP-EPAD-MODULES-API Installer:
+https://ccc.dewetron.com/pl/sdk
 
+
+# Documentation
+
+The docs directory contains a pdf version of the low level programmming manual.
+
+This projets wiki pasge https://github.com/DEWETRON/DAQP-EPAD-MODULES-SDK/wiki
+
+explains how to use DEWETRON DAQP and EPAD modules using this SDK.
 
 
 # Directory structure
+
+## cmake
+
+Common cmake settings.
+
+## docs
+
+Contains documentation like daqp_hsi_pad_modules_progref_228ex.pdf. 
 
 ## modules_api
 
@@ -21,6 +38,19 @@ Additionally CXX contains util and serial port source interfaces.
 
 This directory contains examples directly accessing DAQP modules.
 
+## epad
+
+missing
+
+
+# Compiler
+
+This project successfully builds using:
+* Visual Studio 2019
+* Visual Studio 2017 (+ boost?)
+* Visual Studio 2013 + boost
+
+* GCC 8+
 
 
 # Building the examples
