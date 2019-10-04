@@ -40,7 +40,7 @@ This directory contains examples directly accessing DAQP modules.
 
 ## epad
 
-missing
+This directory contains examples directly measuring using EPAD modules.
 
 ## ext
 
