@@ -1,7 +1,6 @@
 // Copyright (c) Dewetron 2019
 
 #include "dw_modules_api_cxx.h"
-#include "sp_serial_port_util.h"
 #include "sp_if_serial_port.h"
 #include <assert.h>
 #include "stdio.h"
@@ -54,10 +53,6 @@ int main(int argc, char* argv[])
     int success = 0;
     std::string serial_port_name = "SIM_SP1";
     MySerialPort my_serial_port;
-
-    // Scan for available serial ports
-    sp::SerialPortUtil sp;
-    auto ports = sp.getPortNamesSorted();
 
     // Instantiate the api
     ModulesApi  dw_api;
