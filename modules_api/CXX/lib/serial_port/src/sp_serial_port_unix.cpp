@@ -1,5 +1,5 @@
 #include "sp_serial_port_unix.h"
-#include <assert.h>
+
 #include <iostream>
 #include <sstream>
 #include <termios.h>
@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
-#include <unistd.h>
+
 #ifndef OSX
 #include <linux/serial.h>
 #endif
@@ -33,7 +33,7 @@ namespace sp
       m_config(config),
       m_fd(-1) {}
 
-    bool SerialPortUnix::open()
+    BOOL SerialPortUnix::open()
     {
         std::string errmsg(m_path + ": ");
 
@@ -151,7 +151,7 @@ namespace sp
         return true;
     }
 
-    bool SerialPortUnix::close()
+    BOOL SerialPortUnix::close()
     {
         if (m_fd >= 0)
         {
@@ -162,7 +162,7 @@ namespace sp
         return false;
     }
 
-    int32_t SerialPortUnix::numBytesAvailable() const
+    int SerialPortUnix::numBytesAvailable() const
     {
         assert(m_fd >= 0);
 
@@ -175,9 +175,10 @@ namespace sp
         return num_bytes;
     }
 
-    ReadResult SerialPortUnix::read(BYTE* buf, std::size_t buf_size, uint32_t timeout_milli)
+    BOOL SerialPortUnix::read(BYTE* buf, size_t buf_size, unsigned int timeout_milli, ReadResult* read_result)
     {
         assert(m_fd >= 0);
+        assert(read_result != nullptr);
 
         timeval to;
         to.tv_sec = timeout_milli / 1000;
@@ -189,26 +190,31 @@ namespace sp
         int rv = ::select(m_fd+1, &in, NULL, NULL, &to);
         if (rv == -1) {
             print_errno(m_path+": select");
-            return ReadResult(ReadResult::LowLevel);
+            *read_result = ReadResult(ReadResult::LowLevel);
+            return false;
         }
         if (rv == 0) {
-            return ReadResult(ReadResult::Timeout);
+            *read_result = ReadResult(ReadResult::Timeout);
+            return false;
         }
 
         ssize_t nread = ::read(m_fd, buf, buf_size);
         if (nread == -1) {
             print_errno(m_path+": read");
-            return ReadResult(ReadResult::LowLevel);
+            *read_result = ReadResult(ReadResult::LowLevel);
+            return false;
         }
         if (nread == 0) {
             print_error(m_path+": what? read returns 0 on a serial line?");
-            return ReadResult(ReadResult::LowLevel);
+            *read_result = ReadResult(ReadResult::LowLevel);
+            return false;
         }
 
-        return ReadResult(nread);
+        *read_result = ReadResult(nread);
+        return true;
     }
 
-    bool SerialPortUnix::write(BYTE* buf, std::size_t buf_size, uint32_t addr, uint32_t command_id)
+    BOOL SerialPortUnix::write(BYTE* buf, size_t buf_size, unsigned int addr, unsigned int command_id)
     {
         assert(buf_size>0);
 
@@ -230,14 +236,14 @@ namespace sp
         return true;
     }
 
-    uint32_t SerialPortUnix::getBaudRate() const
+    unsigned int SerialPortUnix::getBaudRate() const
     {
         assert(m_fd>=0);
 
         termios t;
         if (::tcgetattr(m_fd, &t) < 0) {
             print_errno(m_path+": GetBaudRate: tcgetattr");
-            // our uint32_t return type permits no proper error handling
+            // our unsigned int return type permits no proper error handling
             assert(false);
             return ~0;
         }
@@ -268,8 +274,4 @@ namespace sp
         return 0;
     }
 
-    // ScopedTransaction SerialPortUnix::getScopedTransaction()
-    // {
-    //     return sp::ScopedTransaction(m_mutex);
-    // }
 }

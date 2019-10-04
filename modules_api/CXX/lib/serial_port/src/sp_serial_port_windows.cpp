@@ -1,9 +1,9 @@
-// Copyright DEWETRON GmbH 2019
-
+// Copyright DEWETRON GmbH 2015
 #include "sp_serial_port_windows.h"
+
 #include "uni_log.h"
-#include <assert.h>
-#include <sstream>
+#include "uni_assert.h"
+
 #include <windows.h>
 
 
@@ -32,13 +32,13 @@ namespace
 
         void setPort(HANDLE h)
         {
-            assert(m_port == INVALID_HANDLE_VALUE);
+            UNI_ASSERT(m_port == INVALID_HANDLE_VALUE);
             m_port = h;
         }
 
         void setEvent(HANDLE h)
         {
-            assert(m_event == INVALID_HANDLE_VALUE);
+            UNI_ASSERT(m_event == INVALID_HANDLE_VALUE);
             m_event = h;
         }
 
@@ -69,7 +69,7 @@ namespace
 
 namespace sp
 {
-    static const uint32_t NUM_OF_RECURSIVE_READ_RETRIES = 3;
+    static const unsigned int NUM_OF_RECURSIVE_READ_RETRIES = 3;
 
     SerialPortWindows::SerialPortWindows(
         const std::string& name,
@@ -86,9 +86,9 @@ namespace sp
             close();
     }
 
-    bool SerialPortWindows::open()
+    BOOL SerialPortWindows::open()
     {
-        assert(!isOpen());
+        UNI_ASSERT(!isOpen());
 
         TransactHandles handles;
 
@@ -268,19 +268,19 @@ namespace sp
         return true;
     }
 
-    bool SerialPortWindows::isOpen() const
+    BOOL SerialPortWindows::isOpen() const
     {
         if (m_port == INVALID_HANDLE_VALUE) {
-            assert(m_event == INVALID_HANDLE_VALUE);
+            UNI_ASSERT(m_event == INVALID_HANDLE_VALUE);
             return false;
         }
         else {
-            assert(m_event != INVALID_HANDLE_VALUE);
+            UNI_ASSERT(m_event != INVALID_HANDLE_VALUE);
             return true;
         }
     }
 
-    bool SerialPortWindows::close()
+    BOOL SerialPortWindows::close()
     {
         if (isOpen()) {
             ::CloseHandle(m_port);
@@ -291,9 +291,9 @@ namespace sp
         return true;
     }
 
-    int32_t SerialPortWindows::numBytesAvailable() const
+    int SerialPortWindows::numBytesAvailable() const
     {
-        assert(isOpen());
+        UNI_ASSERT(isOpen());
 
         COMSTAT status;
         if (!::ClearCommError(m_port, NULL, &status)) {
@@ -303,18 +303,22 @@ namespace sp
         return status.cbInQue;
     }
 
-    ReadResult SerialPortWindows::read(
+    BOOL SerialPortWindows::read(
         BYTE* buf,
         std::size_t buf_size,
-        uint32_t timeout_milli)
+        unsigned int timeout_milli,
+        ReadResult* read_result
+        )
     {
-
-        return read(buf, buf_size, timeout_milli, NUM_OF_RECURSIVE_READ_RETRIES);
+        UNI_ASSERT(read_result != nullptr);
+        ReadResult rr = read(buf, buf_size, timeout_milli, NUM_OF_RECURSIVE_READ_RETRIES);
+        *read_result = rr;
+        return rr.m_type == ReadResult::Type::OK;
     }
 
-    ReadResult SerialPortWindows::read(BYTE* buf, std::size_t buf_size, uint32_t timeout_milli, uint32_t recursive_calls /*= false*/)
+    ReadResult SerialPortWindows::read(BYTE* buf, std::size_t buf_size, unsigned int timeout_milli, unsigned int recursive_calls /*= false*/)
     {
-        assert(isOpen());
+        UNI_ASSERT(isOpen());
 
         BOOL ok;
         OVERLAPPED overlapped = { 0 };
@@ -419,14 +423,14 @@ namespace sp
         return ReadResult(nread);
     }
 
-    bool SerialPortWindows::write(
-    BYTE* buf,
-    std::size_t buf_size,
-    uint32_t addr,
-    uint32_t command_id)
+    BOOL SerialPortWindows::write(
+        BYTE* buf,
+        std::size_t buf_size,
+        unsigned int addr,
+        unsigned int command_id)
     {
-        assert(isOpen());
-        assert(buf_size > 0);
+        UNI_ASSERT(isOpen());
+        UNI_ASSERT(buf_size > 0);
 
         OVERLAPPED overlapped = { 0 };
         overlapped.hEvent = m_event;
@@ -476,15 +480,10 @@ namespace sp
         return true;
     }
 
-    uint32_t SerialPortWindows::getBaudRate() const
+    unsigned int SerialPortWindows::getBaudRate() const
     {
         return m_config.getBaudrate();
     }
-
-    //ScopedTransaction SerialPortWindows::getScopedTransaction()
-    //{
-    //    return sp::ScopedTransaction(m_mutex);
-    //}
 
     void SerialPortWindows::printError_(
         const std::string& msg)

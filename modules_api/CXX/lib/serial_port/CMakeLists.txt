@@ -41,6 +41,7 @@ add_library(${LIBNAME}
 )
 
 target_link_libraries(${LIBNAME}
+	uni_base
 	log
 )
 

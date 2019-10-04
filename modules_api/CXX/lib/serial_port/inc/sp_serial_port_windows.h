@@ -16,21 +16,21 @@ namespace sp
         SerialPortWindows& operator=(const SerialPortWindows&) = delete;
     public:
         SerialPortWindows(const std::string& name, const SerialPortConfig& config);
-        virtual ~SerialPortWindows();
+        ~SerialPortWindows();
 
         virtual const char* getPortName() const override { return m_name.c_str(); }
-        virtual bool open() override;
-        virtual bool isOpen() const override;
-        virtual bool close() override;
-        virtual int32_t numBytesAvailable() const override;
-        virtual ReadResult read(BYTE* buf, std::size_t buf_size, uint32_t timeout_milli) override;
-        virtual bool write(BYTE* buf, std::size_t buf_size, uint32_t addr, uint32_t command_id) override;
-        virtual uint32_t getBaudRate() const override;
+        virtual BOOL open() override;
+        virtual BOOL isOpen() const override;
+        virtual BOOL close() override;
+        virtual int numBytesAvailable() const override;
+        virtual BOOL read(BYTE* buf, size_t buf_size, unsigned int timeout, sp::ReadResult* read_result) override;
+        virtual BOOL write(BYTE* buf, size_t buf_size, unsigned int addr, unsigned int command_id) override;
+        virtual unsigned int getBaudRate() const override;
 
     private:
         void printError_(const std::string& msg) const;
         void printLastError_(const std::string& msg) const;
-        ReadResult read(BYTE* buf, std::size_t buf_size, uint32_t timeout_milli, uint32_t recursive_calls = 0);
+        ReadResult read(BYTE* buf, std::size_t buf_size, unsigned int timeout_milli, unsigned int recursive_calls = 0);
 
     private:
         const std::string m_name;
