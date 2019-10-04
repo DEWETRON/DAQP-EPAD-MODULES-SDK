@@ -42,7 +42,7 @@ This directory contains examples directly accessing DAQP modules.
 
 missing
 
-# ext
+## ext
 
 This directory contains examples explaining how to extend the modules API.
 For instance how to support a custom RS232 or RS485 port.
