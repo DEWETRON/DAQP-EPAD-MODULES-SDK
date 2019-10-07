@@ -1,4 +1,5 @@
 // Copyright (c) Dewetron 2019
+
 #include "dw_modules_load.h"
 #include "dw_modules_c_command.h"
 #include "dw_modules_c_error.h"
@@ -118,8 +119,6 @@ int SP_IMPORT SIM_SP_numBytesAvailable(struct _MySerialPort* self)
 {
     return 0;
 }
-
-static ReadResult read_result;
 
 
 BOOL SP_IMPORT SIM_SP_read(struct _MySerialPort* self, BYTE* buf, size_t buf_size, unsigned int timeout, ReadResult* read_result)

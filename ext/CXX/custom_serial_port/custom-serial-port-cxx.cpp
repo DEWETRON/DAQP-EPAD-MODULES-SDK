@@ -12,37 +12,37 @@ using namespace dwcxx;
 class MySerialPort : public sp::IfSerialPort
 {
 public:
-    const char* getPortName() const override {
+    const char* SP_IMPORT getPortName() const override {
         return "SIM_SP1";
     }
 
-    BOOL open() override {
+    BOOL SP_IMPORT open() override {
         return true;
     }
 
-    BOOL isOpen() const override {
+    BOOL SP_IMPORT isOpen() const override {
         return true;
     }
 
-    BOOL close() override {
+    BOOL SP_IMPORT close() override {
         return true;
     }
 
-    int32_t numBytesAvailable() const override {
+    int32_t SP_IMPORT numBytesAvailable() const override {
         return 0;
     }
 
-    BOOL read(BYTE* buf, size_t buf_size, uint32_t timeout, sp::ReadResult* read_result) override {
+    BOOL SP_IMPORT read(BYTE* buf, size_t buf_size, uint32_t timeout, sp::ReadResult* read_result) override {
         assert(read_result != nullptr);
         *read_result = sp::ReadResult(sp::ReadResult::Timeout);
         return false;
     }
 
-    BOOL write(BYTE* buf, std::size_t buf_size, uint32_t addr, uint32_t command_id) override {
+    BOOL SP_IMPORT write(BYTE* buf, std::size_t buf_size, uint32_t addr, uint32_t command_id) override {
         return true;
     }
 
-    uint32_t getBaudRate() const override {
+    uint32_t SP_IMPORT getBaudRate() const override {
         return 9600;
     }
 };

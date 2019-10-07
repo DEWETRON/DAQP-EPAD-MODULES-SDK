@@ -4,6 +4,11 @@ endif(my_module_CmakeSettings_included)
 set(my_module_CmakeSettings_included true)
 
 #
+# Enable target folders in IDEs
+set_property(GLOBAL
+  PROPERTY USE_FOLDERS ON)
+
+#
 # Check for 64 bit build
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(BUILD_X64 TRUE)
